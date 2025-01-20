@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def fun_vor_main(vor):
+def fun_vor_main(vor,points):
 
     minx = min(vor.vertices[:,0]) - 0.5
     maxx = max(vor.vertices[:,0]) + 0.5
@@ -41,7 +41,38 @@ def fun_vor_main(vor):
     explicit_voronoi = ExplicitVoronoi(vor,neighbor_vertices_storage_updated,total_edges)
 
     from center_search import center_search
-    cell_centers, mean_centers, distance_from_found_to_old, first_three_cell_centers = center_search(explicit_voronoi,vertices)
+    cell_centers, cell_centers_iteration, mean_centers, distance_from_found_to_old, first_three_cell_centers = center_search(explicit_voronoi,vertices)
+
+    #rearrange vor.points according to vor.point_region
+    # print('vor.points:',vor.points)
+    # print('points:',points)
+    # print('vor.point_region:',vor.point_region)
+
+    #rearange vor.points according to vor.point_region
+    original_points_rearranged = np.zeros((len(vor.points),2))
+    for index in  range(len(vor.point_region)):
+        original_points_rearranged[vor.point_region[index]] = points[index]
+
+
+    #find the distance of the found cell centers in each iteration to original cell centers
+    distance_from_found_to_original = {}
+    for iteration in range(len(cell_centers_iteration)):
+        distance_original_list = []
+        for k in range(len(cell_centers_iteration[f'iteration_{iteration}'])):
+            dist_original = ( (cell_centers_iteration[f'iteration_{iteration}'][k][0]-original_points_rearranged[k][0])**2 + (cell_centers_iteration[f'iteration_{iteration}'][k][1]-original_points_rearranged[k][1])**2 )**(1/2)
+            distance_original_list.append(dist_original)
+        distance_from_found_to_original[f'iteration_{iteration}'] = distance_original_list
+
+    #find the distance of the found cell centers in each iteration to the previous cell centers, starting from the second iteration
+    distance_from_found_to_previous = {}
+    for iteration in range(len(cell_centers_iteration)):
+        if iteration > 0:
+            distance_previous_list = []
+            for k in range(len(cell_centers_iteration[f'iteration_{iteration}'])):
+                dist_previous = ( (cell_centers_iteration[f'iteration_{iteration}'][k][0]-cell_centers_iteration[f'iteration_{iteration-1}'][k][0])**2 + (cell_centers_iteration[f'iteration_{iteration}'][k][1]-cell_centers_iteration[f'iteration_{iteration-1}'][k][1])**2 )**(1/2)
+                distance_previous_list.append(dist_previous)
+            distance_from_found_to_previous[f'iteration_{iteration}'] = distance_previous_list
+
 
   
 
@@ -91,4 +122,4 @@ def fun_vor_main(vor):
     # plt.show()
     
 
-    return explicit_voronoi, vertices, cell_centers, mean_centers, distance_from_found_to_old, first_three_cell_centers,
+    return explicit_voronoi, vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous,  first_three_cell_centers

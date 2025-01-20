@@ -8,8 +8,9 @@ NoP = 100 # number of points in each Voronoi cell
 # Creating random points
 # np.random.seed(10)
 dist_to_original_storage ={}
+dist_to_previous_storage = {}
 
-Number_of_Dif_Voronoi_Diagrams = 10
+Number_of_Dif_Voronoi_Diagrams = 1000
 
 
 for i in range(Number_of_Dif_Voronoi_Diagrams):
@@ -20,11 +21,13 @@ for i in range(Number_of_Dif_Voronoi_Diagrams):
 
 
     from Main_Function import fun_vor_main
-    explicit_voronoi,vertices, cell_centers, mean_centers, distance_from_found_to_original, first_three_cell_centers= fun_vor_main(vor)
+    explicit_voronoi,vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous, first_three_cell_centers= fun_vor_main(vor, points)
 
     dist_to_original_storage[f'Random_Voronoi_{i}'] = distance_from_found_to_original
+    dist_to_previous_storage[f'Random_Voronoi_{i}'] = distance_from_found_to_previous
 
-
+print('dist_to_original_storage:',list(dist_to_original_storage))
+print('dist_to_previous_storage:',dist_to_previous_storage)
 
 
 mean_storage = {}
@@ -69,22 +72,65 @@ mean_of_max_storage_summation = [number/Number_of_Dif_Voronoi_Diagrams for numbe
 mean_of_min_storage_summation = [number/Number_of_Dif_Voronoi_Diagrams for number in min_storage_summation]
 
 
-iteration = np.arange(1,100+1,1)
+mean_storage_previous = {}
+max_storage_previous = {}
+min_storage_previous = {}
 
+for i in range(len(dist_to_previous_storage)):
+    mean_storage_of_distribution_previous = []
+    max_storage_of_distribution_previous = []
+    min_storage_of_distribution_previous = []
+    for j in range(len(dist_to_previous_storage[f'Random_Voronoi_{i}'])):
+        mean_of_iteration_previous = np.mean(dist_to_previous_storage[f'Random_Voronoi_{i}'][f'iteration_{j+1}'])
+        max_of_iteration_previous = np.max(dist_to_previous_storage[f'Random_Voronoi_{i}'][f'iteration_{j+1}'])
+        min_of_iteration_previous = np.min(dist_to_previous_storage[f'Random_Voronoi_{i}'][f'iteration_{j+1}'])
+
+        mean_storage_of_distribution_previous.append(mean_of_iteration_previous)
+        max_storage_of_distribution_previous.append(max_of_iteration_previous)
+        min_storage_of_distribution_previous.append(min_of_iteration_previous)
+    
+    mean_storage_previous[f'Random_Voronoi_{i}'] = mean_storage_of_distribution_previous
+    max_storage_previous[f'Random_Voronoi_{i}'] = max_storage_of_distribution_previous
+    min_storage_previous[f'Random_Voronoi_{i}'] = min_storage_of_distribution_previous
+
+mean_storage_summation_previous = np.zeros(len(mean_storage_previous[f'Random_Voronoi_0']))
+max_storage_summation_previous = np.zeros(len(max_storage_previous[f'Random_Voronoi_0']))
+min_storage_summation_previous = np.zeros(len(min_storage_previous[f'Random_Voronoi_0']))
+
+for k in range(len(mean_storage_previous)):
+    mean_storage_summation_previous = np.add(mean_storage_summation_previous,mean_storage_previous[f'Random_Voronoi_{k}'])
+    max_storage_summation_previous = np.add(max_storage_summation_previous,max_storage_previous[f'Random_Voronoi_{k}'])
+    min_storage_summation_previous = np.add(min_storage_summation_previous,min_storage_previous[f'Random_Voronoi_{k}'])
+
+mean_of_mean_storage_summation_previous = [number/Number_of_Dif_Voronoi_Diagrams for number in mean_storage_summation_previous]
+mean_of_max_storage_summation_previous = [number/Number_of_Dif_Voronoi_Diagrams for number in max_storage_summation_previous]
+mean_of_min_storage_summation_previous = [number/Number_of_Dif_Voronoi_Diagrams for number in min_storage_summation_previous]
+
+print(f'iteration number for original: {len(mean_of_mean_storage_summation)}')
+print(f'iteration number for previous: {len(mean_of_mean_storage_summation_previous)}')
+
+iteration = np.arange(1,len(mean_of_max_storage_summation)+1,1)
+iteration_previous = np.arange(1,len(mean_of_max_storage_summation_previous)+1,1)
 
 
 
 fig1,ax1 = plt.subplots()
-ax1.semilogy(iteration,mean_of_mean_storage_summation,label='Mean of the Error of all Voronoi diagrams')
-ax1.semilogy(iteration,mean_of_max_storage_summation,label='Max of the Error of all Voronoi diagrams')
-ax1.semilogy(iteration,mean_of_min_storage_summation,label='Min of the Error of all Voronoi diagrams')
+ax1.semilogy(iteration,mean_of_mean_storage_summation,label='Mean original',linestyle='-', color='black')
+ax1.semilogy(iteration,mean_of_max_storage_summation,label='Max original', linestyle='-', color='orange')
+ax1.semilogy(iteration,mean_of_min_storage_summation,label='Min previous', linestyle='-', color='green')
+ax1.semilogy(iteration_previous,mean_of_mean_storage_summation_previous,label='Mean previous' , linestyle='--', color='black')
+ax1.semilogy(iteration_previous,mean_of_max_storage_summation_previous,label='Max previous', linestyle='--', color='orange')
+ax1.semilogy(iteration_previous,mean_of_min_storage_summation_previous,label='Min previous', linestyle='--', color='green')
 ax1.set_xlabel('Iteration')
 ax1.set_ylabel('Mean Disrance from Original Seed Points')
 ax1.set_title('Semilog plot of the Mean of the Error of all Voronoi diagrams')
 # add legend
 ax1.legend()
+plt.show()
 
-fig1.savefig('/Users/balkirgoka/Documents/Phd/Projects/Voronoi/Inverse_Voronoi/Plots/semilog_Convergence.png',dpi=300)
+
+
+# fig1.savefig('/Users/balkirgoka/Documents/Phd/Projects/Voronoi/Inverse_Voronoi/Plots/semilog_Convergence.png',dpi=300)
 
 
 

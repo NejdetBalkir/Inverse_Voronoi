@@ -69,6 +69,10 @@ def center_search(explicit_voronoi, vertices):
     iteration = 0
 
     distance_from_found_to_original = {}
+    distace_from_found_to_previous = {}
+
+    cell_centers_iteration = {}
+    cell_centers_iteration['iteration_0'] = cell_centers
    
     while (iteration < 100):
         new_cell_centers = np.empty((0,2))
@@ -96,16 +100,18 @@ def center_search(explicit_voronoi, vertices):
             y_average = sum(row[1] for row in mirrored_neighbor_centers)/len(mirrored_neighbor_centers)
             average_point = [x_average,y_average]
             new_cell_centers= np.vstack([new_cell_centers,average_point])
-        distance = []
+
+        distance_previous_list = []
 
         
         for k in range(len(new_cell_centers)):
-            dist = ( (new_cell_centers[k][0]-old_cell_centers[k][0])**2 + (new_cell_centers[k][1]-old_cell_centers[k][1])**2 )**(1/2)
-            distance.append(dist)
+            dist_previous = ( (new_cell_centers[k][0]-old_cell_centers[k][0])**2 + (new_cell_centers[k][1]-old_cell_centers[k][1])**2 )**(1/2)
+            distance_previous_list.append(dist_previous)
 
-        distance_from_found_to_original['iteration_'+str(iteration)] = distance
 
-        deviation = max(distance)
+
+        distance_from_found_to_original['iteration_'+str(iteration)] = distance_previous_list
+
         old_cell_centers = new_cell_centers.copy()
 
         if iteration == 1:
@@ -113,11 +119,14 @@ def center_search(explicit_voronoi, vertices):
         elif iteration == 2:
             iteration_2 = new_cell_centers.tolist()
 
+        cell_centers_iteration['iteration_'+str(iteration+1)] = new_cell_centers
+
         iteration += 1
+
 
 
     first_three_cell_centers = [iteration_0,iteration_1,iteration_2]
 
         
 
-    return new_cell_centers, mean_centers, distance_from_found_to_original, first_three_cell_centers
+    return new_cell_centers, cell_centers_iteration, mean_centers, distance_from_found_to_original, first_three_cell_centers
