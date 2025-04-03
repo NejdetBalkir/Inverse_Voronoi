@@ -129,4 +129,4 @@ def center_search(explicit_voronoi, vertices):
 
         
 
-    return new_cell_centers, cell_centers_iteration, mean_centers, distance_from_found_to_original, first_three_cell_centers
+    return new_cell_centers, cell_centers_iteration #, mean_centers, distance_from_found_to_original, first_three_cell_centers

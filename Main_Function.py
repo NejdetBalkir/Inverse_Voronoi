@@ -41,7 +41,8 @@ def fun_vor_main(vor,points):
     explicit_voronoi = ExplicitVoronoi(vor,neighbor_vertices_storage_updated,total_edges)
 
     from center_search import center_search
-    cell_centers, cell_centers_iteration, mean_centers, distance_from_found_to_old, first_three_cell_centers = center_search(explicit_voronoi,vertices)
+    # cell_centers, cell_centers_iteration, mean_centers, distance_from_found_to_old, first_three_cell_centers = center_search(explicit_voronoi,vertices)
+    cell_centers, cell_centers_iteration = center_search(explicit_voronoi,vertices)
 
     #rearrange vor.points according to vor.point_region
     # print('vor.points:',vor.points)
@@ -122,4 +123,5 @@ def fun_vor_main(vor,points):
     # plt.show()
     
 
-    return explicit_voronoi, vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous,  first_three_cell_centers
+    # return explicit_voronoi, vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous,  first_three_cell_centers
+    return explicit_voronoi, vertices, cell_centers, distance_from_found_to_original, distance_from_found_to_previous

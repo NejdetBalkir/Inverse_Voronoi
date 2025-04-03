@@ -10,7 +10,7 @@ NoP = 100 # number of points in each Voronoi cell
 dist_to_original_storage ={}
 dist_to_previous_storage = {}
 
-Number_of_Dif_Voronoi_Diagrams = 1000
+Number_of_Dif_Voronoi_Diagrams = 10
 
 
 for i in range(Number_of_Dif_Voronoi_Diagrams):
@@ -21,7 +21,7 @@ for i in range(Number_of_Dif_Voronoi_Diagrams):
 
 
     from Main_Function import fun_vor_main
-    explicit_voronoi,vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous, first_three_cell_centers= fun_vor_main(vor, points)
+    explicit_voronoi,vertices, cell_centers, distance_from_found_to_original, distance_from_found_to_previous = fun_vor_main(vor, points)
 
     dist_to_original_storage[f'Random_Voronoi_{i}'] = distance_from_found_to_original
     dist_to_previous_storage[f'Random_Voronoi_{i}'] = distance_from_found_to_previous
