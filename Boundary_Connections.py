@@ -30,7 +30,7 @@ def Boundary_Connections(boundary_limits, boundary_points_count, new_vertices, n
     corner_top_right = [boundary_limits[1],boundary_limits[3]]
     new_vertices_updated.append(corner_top_right)
 
-    for BI in range(4): # BI: boundary index
+    for BI in range(len(boundary_points_count)): # BI: boundary index
         boundary_number = boundary_points_count[BI][0]
         NoVOB = boundary_points_count[1]
         if (boundary_number==0) or (boundary_number==1) : # for vertical boundaries

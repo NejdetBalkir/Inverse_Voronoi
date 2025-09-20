@@ -74,7 +74,7 @@ def center_search(explicit_voronoi, vertices):
     cell_centers_iteration = {}
     cell_centers_iteration['iteration_0'] = cell_centers
    
-    while (iteration < 100):
+    while (iteration < 200):
         new_cell_centers = np.empty((0,2))
         for i in range(len(explicit_voronoi)):
             cell_index = explicit_voronoi[f'sub_dict_{i}']['seed number']
@@ -96,9 +96,21 @@ def center_search(explicit_voronoi, vertices):
                         # find the mirror of the average of vertice points with respect to the common edge
                         mirror_seed_point = mirror_point(neighbor_cell_center,common_vertex_2,common_vertex_1)
                         mirrored_neighbor_centers.append(mirror_seed_point)
-            x_average = sum(row[0] for row in mirrored_neighbor_centers)/len(mirrored_neighbor_centers)
-            y_average = sum(row[1] for row in mirrored_neighbor_centers)/len(mirrored_neighbor_centers)
-            average_point = [x_average,y_average]
+
+            # Filter out None or NaN values
+            mirrored_neighbor_centers = [
+                pt for pt in mirrored_neighbor_centers 
+                if pt is not None and not any(math.isnan(c) for c in pt)
+            ]
+
+            if len(mirrored_neighbor_centers) == 0:
+                # Fallback: no valid neighbors → keep the old center
+                average_point = neighbor_cell_center
+            else:
+                x_average = sum(row[0] for row in mirrored_neighbor_centers) / len(mirrored_neighbor_centers)
+                y_average = sum(row[1] for row in mirrored_neighbor_centers) / len(mirrored_neighbor_centers)
+                average_point = [x_average, y_average]
+
             new_cell_centers= np.vstack([new_cell_centers,average_point])
 
         distance_previous_list = []
@@ -123,7 +135,10 @@ def center_search(explicit_voronoi, vertices):
 
         iteration += 1
 
-
+        mean_change_distance = np.mean(distance_previous_list)
+        if mean_change_distance < 1e-15:
+            print(f'            Converged after {iteration} iterations')
+            break
 
     first_three_cell_centers = [iteration_0,iteration_1,iteration_2]
 

@@ -3,7 +3,6 @@ import math
 def New_Vertices(vor, neighbor_storage, neighbor_vertices_storage):
 
     from intersection import line_intersection_vertical, line_intersection_horizontal
-
     minx = min(vor.vertices[:,0]) - 0.5
     maxx = max(vor.vertices[:,0]) + 0.5
     xValues = [minx, maxx]
@@ -58,7 +57,15 @@ def New_Vertices(vor, neighbor_storage, neighbor_vertices_storage):
                 
 
                 #calculate the slope and the constant of the line in between far point and middle point
-                m = (far_point[1] - midpoint[1]) / [far_point[0] - midpoint[0]]
+                # dx = far_point[0] - midpoint[0]
+                # dy = far_point[1] - midpoint[1]
+                # if abs(dx) < 1e-12: # vertical line
+                #     m = None
+                # elif abs(dy) < 1e-12: # horizontal line
+                #     m = 0.0
+                # else:
+                #     m = dy/dx
+                m = (far_point[1] - midpoint[1] + 1e-6) / ( [far_point[0] - midpoint[0] + 1e-6]) #slope
                 b = midpoint[1] - (m*midpoint[0])
 
                 # CALCULATION OF THE INTERSECTION POINTS WITH THE BOUNDARY LINES
@@ -121,3 +128,110 @@ def New_Vertices(vor, neighbor_storage, neighbor_vertices_storage):
                 #######################################################
 
     return new_vertices, new_vertices_index, neighbor_vertices_storage_updated
+
+
+# import numpy as np
+# import math
+# from intersection import line_intersection_vertical, line_intersection_horizontal
+
+# def New_Vertices(vor, neighbor_storage, neighbor_vertices_storage):
+#     """
+#     Replace infinite Voronoi ridge vertices (-1) with intersections
+#     on a bounding box, creating finite vertices for explicit Voronoi.
+#     """
+
+#     # bounding box
+#     minx = np.min(vor.vertices[:, 0]) - 0.5
+#     maxx = np.max(vor.vertices[:, 0]) + 0.5
+#     miny = np.min(vor.vertices[:, 1]) - 0.5
+#     maxy = np.max(vor.vertices[:, 1]) + 0.5
+
+#     points = vor.points
+#     number_of_edges = len(neighbor_vertices_storage)
+#     number_of_vertices = len(vor.vertices) - 1
+
+#     neighbor_vertices_storage_updated = neighbor_vertices_storage.copy()
+#     new_vertices_index = []
+#     new_vertices = []
+
+#     for i in range(number_of_edges):
+#         seed1_index = neighbor_vertices_storage[i][0]
+#         seed2_index = neighbor_vertices_storage[i][1]
+
+#         seed1_index_LN = np.where(vor.point_region == seed1_index)[0][0]
+#         seed2_index_LN = np.where(vor.point_region == seed2_index)[0][0]
+
+#         edge_points = neighbor_vertices_storage[i][2]
+
+#         for j in range(2):
+#             if edge_points[j] == -1:  # infinite vertex
+#                 finite_vertice_index = edge_points[1 - j]
+#                 finite_vertice = vor.vertices[finite_vertice_index]
+
+#                 # midpoint of seeds
+#                 midpoint = vor.points[[seed1_index_LN, seed2_index_LN]].mean(axis=0)
+#                 seed1_coordinates = vor.points[seed1_index_LN]
+#                 seed2_coordinates = vor.points[seed2_index_LN]
+
+#                 # normal to the line between seeds
+#                 linebtw = seed2_coordinates - seed1_coordinates
+#                 linebtw /= np.linalg.norm(linebtw)
+#                 normal = np.array([-linebtw[1], linebtw[0]])
+
+#                 far_point = midpoint + 3 * normal
+
+#                 dx = far_point[0] - midpoint[0]
+#                 dy = far_point[1] - midpoint[1]
+
+#                 if abs(dx) < 1e-12:
+#                     m, b = None, None   # vertical
+#                 elif abs(dy) < 1e-12:
+#                     m, b = 0.0, midpoint[1]   # horizontal
+#                 else:
+#                     m = dy / dx
+#                     b = midpoint[1] - m * midpoint[0]
+
+#                 # bounding box lines: (type, value)
+#                 boundary_lines = [
+#                     ("v", minx),
+#                     ("v", maxx),
+#                     ("h", miny),
+#                     ("h", maxy),
+#                 ]
+
+#                 intersection_points_list = []
+#                 distance_list = []
+
+#                 for typ, val in boundary_lines:
+#                     if typ == "v":
+#                         ip = line_intersection_vertical(val, m, b)
+#                     else:
+#                         ip = line_intersection_horizontal(val, m, b)
+
+#                     if ip is not None:
+#                         dist = math.dist(finite_vertice, ip)
+#                         intersection_points_list.append(ip)
+#                         distance_list.append(dist)
+
+#                 if not intersection_points_list:
+#                     continue  # skip if no valid intersections
+
+#                 # pick the closest intersection
+#                 min_index = int(np.argmin(distance_list))
+#                 closest_intersection_point = intersection_points_list[min_index]
+
+#                 # add to list of new vertices
+#                 new_vertices.append(closest_intersection_point)
+
+#                 # update storage
+#                 edge_points_updated = edge_points.copy()
+#                 edge_points_updated[j] = number_of_vertices + 1
+#                 neighbor_vertices_storage_updated[i][2] = edge_points_updated
+
+#                 new_vertices_index.append(number_of_vertices + 1)
+#                 number_of_vertices += 1
+
+#     return new_vertices, new_vertices_index, neighbor_vertices_storage_updated
+
+
+

@@ -15,7 +15,14 @@ def New_Edges(new_vertices,new_vertices_index,minx,maxx,miny,maxy,vor):
     vertex_indices_on_boundary_2 = []
     vertex_indices_on_boundary_3 = []
 
+    # Initialize boundary counts so they're always defined
+    boundary_0_count = [0, 0, []]
+    boundary_1_count = [1, 0, []]
+    boundary_2_count = [2, 0, []]
+    boundary_3_count = [3, 0, []]
+
     boundaries_with_intersection = []
+
     for vertexI in range(len(new_vertices)):
         # There are four possibilities: 1- left bound. 2- right bound. 3- bottom bound. 4- top bound.
         # For the left and right boundries, x coordinate of the new vertice should be equal to minx and maxx respectively.
@@ -146,19 +153,25 @@ def New_Edges(new_vertices,new_vertices_index,minx,maxx,miny,maxy,vor):
     if (len(boundaries_with_intersection) < 4):
         sum_boundary_numbers = sum(boundaries_with_intersection)
         missing_boundary_number = 6 - sum_boundary_numbers
-        if missing_boundary_number == 0:
-            boundary_points_count=[boundary_1_count,boundary_2_count,boundary_3_count]
-        elif missing_boundary_number == 1:
-            boundary_points_count=[boundary_0_count,boundary_2_count,boundary_3_count]
-        elif missing_boundary_number == 2:
-            boundary_points_count=[boundary_0_count,boundary_1_count,boundary_3_count]
-        elif missing_boundary_number == 3:
-            boundary_points_count=[boundary_0_count,boundary_1_count,boundary_2_count]
+        # if missing_boundary_number == 0:
+        #     boundary_points_count=[boundary_1_count,boundary_2_count,boundary_3_count]
+        # elif missing_boundary_number == 1:
+        #     boundary_points_count=[boundary_0_count,boundary_2_count,boundary_3_count]
+        # elif missing_boundary_number == 2:
+        #     boundary_points_count=[boundary_0_count,boundary_1_count,boundary_3_count]
+        # elif missing_boundary_number == 3:
+        #     boundary_points_count=[boundary_0_count,boundary_1_count,boundary_2_count]
 
-        boundary_points_count.append([missing_boundary_number,'empty','no intersection'])
+        # boundary_points_count.append([missing_boundary_number,'empty','no intersection'])
+        all_counts = [boundary_0_count, boundary_1_count, boundary_2_count, boundary_3_count]
+        boundary_points_count = [all_counts[i] for i in boundaries_with_intersection]
+        boundary_points_count.append([missing_boundary_number, 'empty', 'no intersection'])
+    
+    else:
+        boundary_points_count = [boundary_0_count, boundary_1_count, boundary_2_count, boundary_3_count]
 
-    elif (len(boundaries_with_intersection) >= 4):
-            boundary_points_count=[boundary_0_count,boundary_1_count,boundary_2_count,boundary_3_count]
+    # elif (len(boundaries_with_intersection) >= 4):
+    #         boundary_points_count=[boundary_0_count,boundary_1_count,boundary_2_count,boundary_3_count]
         
     # boundary_points_count = [boundary_0_count,boundary_1_count,boundary_2_count,boundary_3_count]
 
