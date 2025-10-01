@@ -65,7 +65,7 @@ def New_Vertices(vor, neighbor_storage, neighbor_vertices_storage):
                 #     m = 0.0
                 # else:
                 #     m = dy/dx
-                m = (far_point[1] - midpoint[1] + 1e-6) / ( [far_point[0] - midpoint[0] + 1e-6]) #slope
+                m = (far_point[1] - midpoint[1] ) / ( [far_point[0] - midpoint[0] ]) #slope
                 b = midpoint[1] - (m*midpoint[0])
 
                 # CALCULATION OF THE INTERSECTION POINTS WITH THE BOUNDARY LINES

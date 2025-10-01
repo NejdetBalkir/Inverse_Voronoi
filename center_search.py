@@ -74,7 +74,7 @@ def center_search(explicit_voronoi, vertices):
     cell_centers_iteration = {}
     cell_centers_iteration['iteration_0'] = cell_centers
    
-    while (iteration < 200):
+    while (iteration < 300):
         new_cell_centers = np.empty((0,2))
         for i in range(len(explicit_voronoi)):
             cell_index = explicit_voronoi[f'sub_dict_{i}']['seed number']
@@ -111,6 +111,10 @@ def center_search(explicit_voronoi, vertices):
                 y_average = sum(row[1] for row in mirrored_neighbor_centers) / len(mirrored_neighbor_centers)
                 average_point = [x_average, y_average]
 
+            # x_average = sum(row[0] for row in mirrored_neighbor_centers) / len(mirrored_neighbor_centers)
+            # y_average = sum(row[1] for row in mirrored_neighbor_centers) / len(mirrored_neighbor_centers)
+            # average_point = [x_average, y_average]
+
             new_cell_centers= np.vstack([new_cell_centers,average_point])
 
         distance_previous_list = []
@@ -136,7 +140,8 @@ def center_search(explicit_voronoi, vertices):
         iteration += 1
 
         mean_change_distance = np.mean(distance_previous_list)
-        if mean_change_distance < 1e-15:
+        maximum_change_distance = np.max(distance_previous_list)
+        if maximum_change_distance< 1e-15:
             print(f'            Converged after {iteration} iterations')
             break
 

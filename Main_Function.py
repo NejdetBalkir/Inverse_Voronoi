@@ -55,14 +55,17 @@ def fun_vor_main(vor,points):
         original_points_rearranged[vor.point_region[index]] = points[index]
 
 
-    #find the distance of the found cell centers in each iteration to original cell centers
-    distance_from_found_to_original = {}
-    for iteration in range(len(cell_centers_iteration)):
-        distance_original_list = []
-        for k in range(len(cell_centers_iteration[f'iteration_{iteration}'])):
-            dist_original = ( (cell_centers_iteration[f'iteration_{iteration}'][k][0]-original_points_rearranged[k][0])**2 + (cell_centers_iteration[f'iteration_{iteration}'][k][1]-original_points_rearranged[k][1])**2 )**(1/2)
-            distance_original_list.append(dist_original)
-        distance_from_found_to_original[f'iteration_{iteration}'] = distance_original_list
+    #find the distance of the found cell centers and the original points
+    distance_from_found_to_original = []
+    distance = cell_centers-original_points_rearranged
+    distance_original_list = np.sqrt(np.sum(distance**2,axis=1))
+
+    # for iteration in range(len(cell_centers_iteration)):
+    #     distance_original_list = []
+    #     for k in range(len(cell_centers_iteration[f'iteration_{iteration}'])):
+    #         dist_original = ( (cell_centers_iteration[f'iteration_{iteration}'][k][0]-original_points_rearranged[k][0])**2 + (cell_centers_iteration[f'iteration_{iteration}'][k][1]-original_points_rearranged[k][1])**2 )**(1/2)
+    #         distance_original_list.append(dist_original)
+    #     distance_from_found_to_original[f'iteration_{iteration}'] = distance_original_list
 
     #find the distance of the found cell centers in each iteration to the previous cell centers, starting from the second iteration
     distance_from_found_to_previous = {}
@@ -124,4 +127,4 @@ def fun_vor_main(vor,points):
     
 
     # return explicit_voronoi, vertices, cell_centers, mean_centers, distance_from_found_to_original, distance_from_found_to_previous,  first_three_cell_centers
-    return explicit_voronoi, vertices, cell_centers, distance_from_found_to_original, distance_from_found_to_previous
+    return explicit_voronoi, vertices, cell_centers, distance_original_list, distance_from_found_to_previous
